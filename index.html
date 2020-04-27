@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+          <title>Document</title>
+</head>
+<style>
+*{ 
+    text-decoration: none;
+    list-style: none;
+  }
+.container{
+     max-width: 600px;
+     height:90vh;
+     background-color:#769EBA;
+     margin:0px auto;
+}
+h1{
+     text-align: center;
+     color:white;
+     padding-top: 10px;;
+}
+li{
+  position: relative;
+  padding: 20px 30px;
+  background: rgb(245, 244, 244);
+  margin-bottom:10px;
+  width:75%;
+  transition: all 1s;
+}
+input{
+     width:70%;
+     height:6vh;
+     margin-left: 25px;
+}
+::placeholder{
+     padding-left: 10px;
+}
+li:hover{
+transform: scale(1.01);
+box-shadow: 0px 0px 10px 0px whitesmoke;
+}
+h2{
+  padding-left:20px;
+  color:white
+}
+body{
+
+  background:rgb(245, 244, 244);
+}
+.del{
+position: absolute;
+top:20px;
+right:20px;
+color: #323232;
+cursor: pointer;
+}
+button{
+  width:100px;
+  height:7vh;
+  margin-left: 10px;
+  border:none;
+  background: ghostwhite;
+  outline: none;
+  border-radius: 5%;
+}
+button:hover{
+  background: white;
+  transition: all 1s;
+}
+.editing{
+  cursor: pointer;
+  position: absolute;
+  right:10%;
+}
+.upp{
+position: absolute;
+cursor: pointer;
+right:17%;
+color:#323232;
+}
+.downn{
+  position: absolute;
+cursor: pointer;
+right:22%;
+color:#323232;
+}
+i:hover{
+  color:#769EBA;
+}
+
+</style>
+<body>
+  <div class="container">
+    <h1>TO DO LIST</h1>
+          <form>
+         <input type="text" placeholder="Add a to do....">
+         <button type="button" onclick="editvalues(event)">Update</button>
+</form>
+<h2>ITEMS</h2>
+<ul></ul>
+<button id="btn">Clear</button>
+
+</div>
+</body>
+<script>
+          var input =document.querySelector("input")
+          var form =document.querySelector("form")
+          let indexOfValueToBeChanged = -1;
+          var ul =document.querySelector('ul')
+          var arr=[];
+          localStorage.setItem("items", JSON.stringify(arr))
+          var data=JSON.parse(localStorage.getItem('items'));
+function editvalues(e){
+    let v = input.value
+    if(indexOfValueToBeChanged === -1){
+        alert(" Press `Enter` key to save `New Entry`.")
+        return;
+    }else{
+        arr[indexOfValueToBeChanged] = v
+        console.log(arr);
+        
+        localStorage.setItem('items',JSON.stringify(arr))
+        ul.innerHTML = ""
+        arr.forEach((item,index) => {
+        limaker(item,index);
+});
+    }
+    indexOfValueToBeChanged = -1
+    input.value = ""
+}
+function editvalue(v,i){
+    input.value = v
+    indexOfValueToBeChanged = i
+}
+            var limaker = (text,index)=>{
+              console.log(index,"limaker function");
+              
+            var li = document.createElement('li')
+            li.setAttribute("data-index",index)
+            li.textContent=text;
+            var span = document.createElement('span');
+            span.classList.add('del');
+            span.innerHTML=`<i class="fas fa-trash"></i>`
+            span.onclick=function(){
+              deleteItem(index)
+            }
+          var edit = document.createElement('span');
+          edit.classList.add('editing')
+          edit.innerHTML=`<i class="far fa-edit"></i>`
+          edit.onclick=function(){
+            editvalue(text,index)
+          }
+          var down =document.createElement('span');
+          down.classList.add('downn')
+          down.innerHTML=`<i class="fas fa-hand-point-down"></i>`
+          down.onclick=function(){
+          handledown(index)  
+          }
+          var up = document.createElement('span');
+          up.classList.add('upp')
+          up.innerHTML=`<i class="fas fa-hand-point-up"></i>`
+          up.onclick=function(){
+           handleUp(index)
+          }
+        
+          li.appendChild(down)
+          li.appendChild(up)
+          li.appendChild(edit)
+          ul.appendChild(li)
+          li.appendChild(span)
+          }
+          form.addEventListener("submit", function(e)
+          {
+          e.preventDefault();
+          arr.push(input.value);
+          localStorage.setItem("items", JSON.stringify(arr));
+          limaker(input.value,arr.length-1);
+          input.value=""
+          })
+data.forEach((items,index) => {
+          limaker(items,index)
+});
+function deleteItem(i){
+  arr.splice(i,1)
+  localStorage.setItem("items", JSON.stringify(arr));
+  var dele = document.querySelector(`li[data-index="${i}"]`);
+  ul.removeChild(dele);
+  alert('Item Removed')
+}
+
+function handledown(t)
+{
+console.log(t)
+          var temp;
+    
+          if(t+1<arr.length)
+          {
+                    temp = arr[t+1];
+                    console.log(temp)
+                    arr[t+1]=arr[t];
+                    arr[t]=temp;
+
+                    localStorage.setItem('items',JSON.stringify(arr));
+                    ul.innerHTML="";
+                    arr.forEach((item,index) => {
+                              limaker(item,index);
+
+                    });
+          }
+          else{
+}
+
+}
+function handleUp(i)
+{
+          var temp;
+          console.log(i,arr);
+          
+          if(i-1!=-1)
+          {
+                    temp = arr[i-1];
+                    arr[i-1]=arr[i];
+                    arr[i]=temp;
+
+                    localStorage.setItem('items',JSON.stringify(arr));
+                    ul.innerHTML="";
+                    arr.forEach ((item,index) => {
+                              limaker(item,index);
+                    });
+          }
+          else{
+          }
+}
+  var btn1 =document.getElementById('btn');
+  btn1.addEventListener('click', function() {
+  localStorage.clear();
+  while (ul.firstChild) {
+  ul.removeChild(ul.firstChild);
+  }
+  arr = [];
+});
+
+</script>
+</html>
